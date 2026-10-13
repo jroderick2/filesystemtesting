@@ -1,0 +1,20 @@
+universe = vanilla
++SingularityImage = "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-dask-almalinux9:2025.12.0-py3.12"
+
+transfer_input_files = replay_oldtime.py, ./xrdlogs/$(XrdLog), ./rootfile_lists/CombiningAllandExtra.txt, rtest.tkn, libjemalloc.so.2
+
+Executable = replay_oldtime.py
+Arguments = -i $(XrdLog) -r CombiningAllandExtra.txt -n -u 5400 -w 50 -j 200 -o $(Process) 
+# make sure to mkdir -p logs before submitting the job!
+Output = condor_logs/replay.$(Cluster).$(Process).stdout
+Error = condor_logs/replay.$(Cluster).$(Process).stderr
+Log = condor_logs/replay.$(Cluster).$(Process).log
+should_transfer_files = YES
+WhenToTransferOutput  = ON_EXIT_OR_EVICT
+RequestCpus = 1
+environment = "BEARER_TOKEN_FILE=rtest.tkn TEST_CLIENT=ca557530-9acc-4d52-b6ed-d4f0e1e25aac TEST_SECRET=YQBvYTmmvHL1WmIdrNnG46aAPvaEX1gFxLL9VNuRx6nR7WrRG1nKkhBwVt-3eeJYKc88pCnrOkxZ4RMbyUlXMQ LD_PRELOAD=./libjemalloc.so.2"
+RequestMemory = 6000
+
+
+
+queue XrdLog from xrdlogs_list.txt
