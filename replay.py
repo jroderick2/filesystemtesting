@@ -2,7 +2,7 @@
 """
 Python script to extract chunk sizes from xrootd log
 
-Run in apptainer using: apptainer exec -B ${PWD}:/srv --pwd /srv /cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-dask-almalinux9:2025.12.0-py3.12 /bin/bash
+Run in apptainer using: apptainer exec -B ${PWD}:/srv -B /cvmfs -B /etc/grid-security --pwd /srv /cvmfs/unpacked.cern.ch/registry.hub.docker.com/coffeateam/coffea-dask-almalinux9:2025.12.0-py3.12 /bin/bash
 
 Command to run: python replay.py -i [name of xrootd logfile] -r [name of file with list of rootfiles] -n [enable random reads option] -s [size of random reads in bytes] -d [enable debug logging level for verbose outputs] -w [number of worker threads to use] -t [wait time between each read request] -u [duration of random reads script in seconds] -m [multiply read sizes by factor of 0.1]
 """
