@@ -63,8 +63,8 @@ client_id = os.environ.get("TEST_CLIENT", "")
 client_secret = os.environ.get("TEST_SECRET", "")
 
 # set xrootd to prefer tokens, then unix
-#os.environ["XrdSecPROTOCOL"] = "ztn,unix"
-#os.environ["BEARER_TOKEN_FILE"] = "rtest.tkn"
+os.environ["XrdSecPROTOCOL"] = "ztn,unix"
+os.environ["BEARER_TOKEN_FILE"] = "rtest.tkn"
 
 
 # ---------------------------------------------------------------------------------------------------------------#
@@ -488,17 +488,17 @@ if __name__ == "__main__":
         level=log_level, format="%(asctime)s [%(levelname)s] %(message)s"
     )
 
-    #generate_token()
-    #success = check_xrootd_auth()
+    generate_token()
+    success = check_xrootd_auth()
+    if success:
+       logging.info("Unix authentication confirmed.")
+    else:
+        logging.error("Unix authentication failed.")
+   
 
-    #if success:
-    #    logging.info("Unix authentication confirmed.")
-    #else:
-    #    logging.error("Unix authentication failed.")
-    #   exit(1)
 
     # keep token up to date
-    #threading.Thread(target=refresh_token, daemon=True).start()
+    threading.Thread(target=refresh_token, daemon=True).start()
 
     filein= args.input
     rootfiles = args.rootfiles
@@ -516,7 +516,7 @@ if __name__ == "__main__":
     total_stats = Stats()
     stats_log = []
     #Redirector for filesystem you want to test
-    redirector = "root://cmsxrootd-site.fnal.gov/"
+    redirector = "root://dtntest2001.fnal.gov//store/temp/sitetest"
     future_to_job_id = {}
     threading.Thread(target=monitor_system, args=(stats_log,), daemon=True).start()
 
@@ -526,7 +526,7 @@ if __name__ == "__main__":
         urls = [redirector + line.strip() for line in rootfiles_list]       
         if random_reads == False:
             for i in range(max_workers):
-                filepath = urls[i % len(urls)]  # Cycle through the list of URLs if there are more workers than URLs
+                filepath = random.choice(urls)  # Pick a random file for each worker
                 logging.info(f"Submitting replay over {filepath}")
                 f_obj = executor.submit(xrdlog_replay, filein, filepath, sleep_times, reduce_size)
                 future_to_job_id[f_obj] = f"worker_{i}_{filepath}"
@@ -535,7 +535,7 @@ if __name__ == "__main__":
             logging.info(f"Random reads enabled, using read size of {random_read_size} bytes for {duration} seconds")
             end_time = start + duration
             for i in range(max_workers):
-                filepath = urls[i % len(urls)]  # Cycle through the list of URLs if there are more workers than URLs
+                filepath = random.choice(urls)  # Pick a random file for each worker
                 logging.info(f"Submitting random replay over {filepath}")
                 f_obj = executor.submit(random_replay, filein, filepath, random_read_size, end_time)
                 #f_obj = executor.submit(duration_replay, filein, urls, end_time, random_read_size)
