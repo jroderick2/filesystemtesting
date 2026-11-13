@@ -516,7 +516,7 @@ if __name__ == "__main__":
     total_stats = Stats()
     stats_log = []
     #Redirector for filesystem you want to test
-    redirector = "root://dtntest2001.fnal.gov//store/temp/sitetest"
+    redirector = "root://dtntest.fnal.gov//store/temp/sitetest"
     future_to_job_id = {}
     threading.Thread(target=monitor_system, args=(stats_log,), daemon=True).start()
 
